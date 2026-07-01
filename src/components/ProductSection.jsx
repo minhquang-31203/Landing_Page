@@ -44,6 +44,7 @@ export default function ProductSection({ store }) {
             return (
               <div
                 key={product.id}
+                className={`product-section__card-wrapper product-section__card-wrapper--${product.id}`}
                 style={{ opacity: cardProgress, transform: `translateY(${cardY}px)` }}
               >
                 <ProductCard
