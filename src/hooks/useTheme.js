@@ -8,11 +8,9 @@ import { useState, useEffect, useCallback } from 'react';
  */
 export function useTheme() {
   const [theme, setTheme] = useState(() => {
-    // Ưu tiên: localStorage → prefers-color-scheme → dark (mặc định)
+    // Ưu tiên: localStorage → dark (mặc định)
     const saved = localStorage.getItem('visionx-theme');
-    if (saved) return saved;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return prefersDark ? 'dark' : 'light';
+    return saved || 'dark';
   });
 
   useEffect(() => {
