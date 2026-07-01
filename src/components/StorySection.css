@@ -1,0 +1,305 @@
+/* ===== Story Wrapper & Timeline ===== */
+.story-wrapper {
+  position: relative;
+}
+
+.story-timeline {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.story-timeline__line {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(99,102,241,0.3) 10%,
+    rgba(6,182,212,0.2) 50%,
+    rgba(168,85,247,0.3) 90%,
+    transparent 100%
+  );
+}
+
+/* ===== Story Chapter ===== */
+.story-chapter {
+  position: relative;
+  padding: 8rem 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.story-chapter__glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(150px);
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+/* Accent colors per chapter */
+.story-chapter--indigo .story-chapter__glow {
+  background: #6366f1;
+  top: 20%;
+  left: -10%;
+}
+.story-chapter--cyan .story-chapter__glow {
+  background: #06b6d4;
+  top: 10%;
+  right: -10%;
+}
+.story-chapter--purple .story-chapter__glow {
+  background: #a855f7;
+  bottom: 10%;
+  left: -5%;
+}
+
+/* ===== Container Layout ===== */
+.story-chapter__container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.story-chapter--right .story-chapter__container {
+  direction: rtl;
+}
+.story-chapter--right .story-chapter__container > * {
+  direction: ltr;
+}
+
+/* ===== Visual / Image ===== */
+.story-chapter__visual {
+  position: relative;
+  will-change: transform, opacity;
+}
+
+.story-chapter__image-frame {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+}
+
+.story-chapter__image {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.story-chapter__image-frame:hover .story-chapter__image {
+  transform: scale(1.03);
+}
+
+.story-chapter__image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(99,102,241,0.05) 0%,
+    transparent 50%,
+    rgba(6,182,212,0.05) 100%
+  );
+  pointer-events: none;
+}
+
+.story-chapter__float-label {
+  position: absolute;
+  top: -1rem;
+  left: -1rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(99,102,241,0.3);
+  z-index: 3;
+}
+
+.story-chapter__float-num {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #fff;
+}
+
+/* ===== Content / Text ===== */
+.story-chapter__content {
+  will-change: transform, opacity;
+}
+
+.story-chapter__label {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.story-chapter__line-wrap {
+  width: 80px;
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+.story-chapter__line {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.story-chapter--indigo .story-chapter__line {
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+}
+.story-chapter--cyan .story-chapter__line {
+  background: linear-gradient(90deg, #06b6d4, #22d3ee);
+}
+.story-chapter--purple .story-chapter__line {
+  background: linear-gradient(90deg, #a855f7, #c084fc);
+}
+
+.story-chapter__title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.story-chapter--indigo .story-chapter__title span:last-child {
+  background: linear-gradient(135deg, #818cf8, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.story-chapter--cyan .story-chapter__title span:last-child {
+  background: linear-gradient(135deg, #22d3ee, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.story-chapter--purple .story-chapter__title span:last-child {
+  background: linear-gradient(135deg, #c084fc, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.story-chapter__desc {
+  font-size: 1.0625rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 480px;
+  margin-bottom: 2rem;
+}
+
+/* ===== Stats ===== */
+.story-chapter__stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.story-chapter__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.story-chapter__stat-value {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: var(--gradient-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.story-chapter--cyan .story-chapter__stat-value {
+  background: linear-gradient(135deg, #22d3ee, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.story-chapter--purple .story-chapter__stat-value {
+  background: linear-gradient(135deg, #c084fc, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.story-chapter__stat-label {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+/* ===== Even-indexed chapters: different background ===== */
+.story-chapter:nth-child(even) {
+  background: var(--bg-secondary);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 968px) {
+  .story-chapter {
+    padding: 5rem 0;
+    min-height: auto;
+  }
+  .story-chapter__container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .story-chapter--right .story-chapter__container {
+    direction: ltr;
+  }
+  .story-chapter__content {
+    text-align: center;
+  }
+  .story-chapter__desc {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .story-chapter__stats {
+    justify-content: center;
+  }
+  .story-chapter__float-label {
+    top: -0.75rem;
+    left: auto;
+    right: -0.75rem;
+  }
+  .story-timeline {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .story-chapter__stats {
+    gap: 1.25rem;
+  }
+  .story-chapter__stat-value {
+    font-size: 1.375rem;
+  }
+}

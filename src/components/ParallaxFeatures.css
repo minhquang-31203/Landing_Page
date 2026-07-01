@@ -1,0 +1,129 @@
+/* ===== Parallax Features Section ===== */
+.px-features {
+  position: relative;
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.px-features__bg-accent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.px-features__header {
+  text-align: center;
+  margin-bottom: 4rem;
+  will-change: transform, opacity;
+}
+
+/* ===== Cards Grid ===== */
+.px-features__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.px-features__card {
+  position: relative;
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  will-change: transform, opacity;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+
+.px-features__card:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Shine effect on hover */
+.px-features__card-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255,255,255,0.03) 50%,
+    transparent 100%
+  );
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+.px-features__card:hover .px-features__card-shine {
+  left: 100%;
+}
+
+/* Top gradient border on hover */
+.px-features__card-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.px-features__card:hover .px-features__card-border {
+  opacity: 1;
+}
+
+.px-features__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  background: rgba(99,102,241,0.08);
+  border: 1px solid rgba(99,102,241,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.px-features__card:hover .px-features__icon {
+  transform: scale(1.1) rotate(-3deg);
+  box-shadow: 0 0 20px rgba(99,102,241,0.2);
+}
+
+.px-features__card-title {
+  font-family: var(--font-heading);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.px-features__card-desc {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .px-features__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .px-features__grid {
+    grid-template-columns: 1fr;
+  }
+}
