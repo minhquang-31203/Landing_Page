@@ -10,16 +10,16 @@ const formatPrice = (p) =>
   new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
 
 /* ---- Giỏ hàng ---- */
-function CartSection({ cartItems, cartTotal, onUpdateQty, onRemove }) {
+function CartSection({ cartItems, cartTotal, onUpdateQty, onRemove, onClose }) {
   if (cartItems.length === 0) {
     return (
       <div className="drawer-empty">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity=".3">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity=".4">
           <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
         </svg>
         <p>Giỏ hàng đang trống</p>
-        <a href="#products" className="btn btn-outline" style={{marginTop:'.5rem',fontSize:'.875rem',padding:'.6rem 1.5rem'}}>
+        <a href="#products" onClick={onClose} className="btn btn-outline" style={{marginTop:'.5rem',fontSize:'.875rem',padding:'.6rem 1.5rem'}}>
           Khám phá sản phẩm
         </a>
       </div>
@@ -53,7 +53,7 @@ function CartSection({ cartItems, cartTotal, onUpdateQty, onRemove }) {
           <span>Tổng cộng</span>
           <span className="drawer-cart__total-price">{formatPrice(cartTotal)}</span>
         </div>
-        <a href="#newsletter" className="btn btn-primary btn--glow" style={{ width: '100%', justifyContent: 'center' }}>
+        <a href="#newsletter" onClick={onClose} className="btn btn-primary btn--glow" style={{ width: '100%', justifyContent: 'center' }}>
           Đặt trước ngay →
         </a>
       </div>
@@ -207,6 +207,7 @@ export default function StoreDrawer({
             <CartSection
               cartItems={cartItems} cartTotal={cartTotal}
               onUpdateQty={onUpdateQty} onRemove={onRemoveFromCart}
+              onClose={onClose}
             />
           )}
           {activeTab === 'favorites' && (
