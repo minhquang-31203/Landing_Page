@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { useElementProgress } from '../hooks/useParallax';
+import SkeletonCard from './SkeletonCard';
 import './ParallaxFeatures.css';
 
 const FEATURES = [
@@ -66,21 +68,24 @@ const FEATURES = [
 
 export default function ParallaxFeatures() {
   const [ref, progress] = useElementProgress();
-  
-  // Header parallax - sử dụng progress trực tiếp
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Hiển thị skeleton 900ms lần đầu load
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 900);
+    return () => clearTimeout(timer);
+  }, []);
+
   const headingY = 50 * (1 - progress);
 
   return (
     <section className="px-features section" id="features" ref={ref}>
       <div className="px-features__bg-accent" aria-hidden="true" />
-      
+
       <div className="container">
         <div
           className="px-features__header"
-          style={{
-            opacity: progress,
-            transform: `translateY(${headingY}px)`,
-          }}
+          style={{ opacity: progress, transform: `translateY(${headingY}px)` }}
         >
           <span className="section-label">Tính năng vượt trội</span>
           <h2 className="section-title">
@@ -93,29 +98,27 @@ export default function ParallaxFeatures() {
         </div>
 
         <div className="px-features__grid">
-          {FEATURES.map((f, i) => {
-            // Stagger: mỗi card delay thêm một chút
-            const cardProgress = Math.min(1, Math.max(0, progress * 1.5 - i * 0.08));
-            const cardY = 60 * (1 - cardProgress);
-            const cardScale = 0.88 + cardProgress * 0.12;
-
-            return (
-              <article
-                key={i}
-                className="px-features__card"
-                style={{
-                  opacity: cardProgress,
-                  transform: `translateY(${cardY}px) scale(${cardScale})`,
-                }}
-              >
-                <div className="px-features__card-shine" />
-                <div className="px-features__icon">{f.icon}</div>
-                <h3 className="px-features__card-title">{f.title}</h3>
-                <p className="px-features__card-desc">{f.desc}</p>
-                <div className="px-features__card-border" />
-              </article>
-            );
-          })}
+          {isLoading
+            ? Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)
+            : FEATURES.map((f, i) => {
+                const cardProgress = Math.min(1, Math.max(0, progress * 1.5 - i * 0.08));
+                const cardY = 60 * (1 - cardProgress);
+                const cardScale = 0.88 + cardProgress * 0.12;
+                return (
+                  <article
+                    key={i}
+                    className="px-features__card"
+                    style={{ opacity: cardProgress, transform: `translateY(${cardY}px) scale(${cardScale})` }}
+                  >
+                    <div className="px-features__card-shine" />
+                    <div className="px-features__icon">{f.icon}</div>
+                    <h3 className="px-features__card-title">{f.title}</h3>
+                    <p className="px-features__card-desc">{f.desc}</p>
+                    <div className="px-features__card-border" />
+                  </article>
+                );
+              })
+          }
         </div>
       </div>
     </section>

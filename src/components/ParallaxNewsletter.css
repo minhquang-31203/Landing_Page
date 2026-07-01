@@ -116,6 +116,29 @@
   text-align: center;
 }
 
+/* Per-field validation states */
+.px-newsletter__field--error .px-newsletter__input {
+  border-color: rgba(244,63,94,.6);
+  box-shadow: 0 0 0 3px rgba(244,63,94,.12);
+}
+.px-newsletter__field--valid .px-newsletter__input {
+  border-color: rgba(16,185,129,.5);
+  box-shadow: 0 0 0 3px rgba(16,185,129,.08);
+}
+.px-newsletter__field-error {
+  font-size: .75rem;
+  color: #f87171;
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  margin-top: .1rem;
+  animation: fadeInUp .2s ease;
+}
+.px-newsletter__field-error::before {
+  content: '⚠';
+  font-size: .7rem;
+}
+
 .px-newsletter__spinner {
   width: 20px;
   height: 20px;

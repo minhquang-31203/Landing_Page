@@ -2,51 +2,106 @@ import { useState } from 'react';
 import { useElementProgress } from '../hooks/useParallax';
 import './ParallaxNewsletter.css';
 
-const API_URL = 'https://jsonplaceholder.typicode.com/posts';
+/**
+ * WEBHOOK_URL — endpoint thực tế nhận dữ liệu form
+ * Sử dụng webhook.site để test. Thay bằng URL backend thực khi production.
+ */
+const WEBHOOK_URL = 'https://webhook.site/90b3e11d-6d43-47e6-9b11-c6d76e81d17c';
 
-export default function ParallaxNewsletter() {
+/* Validation */
+const DISPOSABLE_PATTERNS = ['mailinator', 'guerrillamail', 'tempmail', 'throwaway', 'yopmail', 'fakeinbox'];
+
+function validateForm(form) {
+  const errors = {};
+  const name = form.name.trim();
+  const email = form.email.trim();
+
+  if (!name) {
+    errors.name = 'Vui lòng nhập họ và tên.';
+  } else if (name.length < 2) {
+    errors.name = 'Họ và tên phải có ít nhất 2 ký tự.';
+  } else if (!/^[\p{L}\s'-]+$/u.test(name)) {
+    errors.name = 'Họ và tên chỉ chứa chữ cái và khoảng trắng.';
+  }
+
+  if (!email) {
+    errors.email = 'Vui lòng nhập địa chỉ email.';
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    errors.email = 'Địa chỉ email không đúng định dạng.';
+  } else if (DISPOSABLE_PATTERNS.some((p) => email.toLowerCase().includes(p))) {
+    errors.email = 'Vui lòng dùng địa chỉ email thật của bạn.';
+  }
+
+  return errors;
+}
+
+export default function ParallaxNewsletter({ showToast }) {
   const [ref, progress] = useElementProgress();
   const [form, setForm] = useState({ name: '', email: '' });
-  const [status, setStatus] = useState('idle');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+  const [status, setStatus] = useState('idle'); // idle | loading | success
 
-  // Parallax đơn giản: dùng progress trực tiếp
   const cardY = 60 * (1 - progress);
   const cardScale = 0.92 + progress * 0.08;
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    // Validate on change if field was already touched
+    if (touched[name]) {
+      const fieldErrors = validateForm({ ...form, [name]: value });
+      setErrors((prev) => ({ ...prev, [name]: fieldErrors[name] }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const fieldErrors = validateForm(form);
+    setErrors((prev) => ({ ...prev, [name]: fieldErrors[name] }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.email.trim()) {
-      setStatus('error');
-      setErrorMsg('Vui lòng điền đầy đủ thông tin.');
-      return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
-      setStatus('error');
-      setErrorMsg('Email không hợp lệ.');
+    // Mark all as touched
+    setTouched({ name: true, email: true });
+    const validationErrors = validateForm(form);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      showToast?.('Vui lòng kiểm tra lại thông tin đã nhập.', 'error');
       return;
     }
 
     setStatus('loading');
-    setErrorMsg('');
 
     try {
-      const res = await fetch(API_URL, {
+      const payload = {
+        source: 'VisionX Landing Page',
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent.slice(0, 100),
+        referrer: document.referrer || 'direct',
+        page: window.location.href,
+      };
+
+      const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: form.name, body: form.email, userId: 1 }),
+        body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error('Gửi thất bại');
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
       setStatus('success');
       setForm({ name: '', email: '' });
+      setTouched({});
+      setErrors({});
+      showToast?.('Đăng ký thành công! Chúng tôi sẽ liên hệ sớm nhất. 🎉', 'success');
     } catch (err) {
-      setStatus('error');
-      setErrorMsg(err.message || 'Đã xảy ra lỗi. Vui lòng thử lại.');
+      setStatus('idle');
+      showToast?.('Gửi thất bại. Vui lòng thử lại sau ít phút.', 'error');
     }
   };
 
@@ -60,10 +115,7 @@ export default function ParallaxNewsletter() {
       <div className="container">
         <div
           className="px-newsletter__card"
-          style={{
-            opacity: progress,
-            transform: `translateY(${cardY}px) scale(${cardScale})`,
-          }}
+          style={{ opacity: progress, transform: `translateY(${cardY}px) scale(${cardScale})` }}
         >
           <div className="px-newsletter__glow" aria-hidden="true" />
 
@@ -84,15 +136,14 @@ export default function ParallaxNewsletter() {
                 </svg>
               </div>
               <h3 className="px-newsletter__success-title">Đăng Ký Thành Công!</h3>
-              <p className="px-newsletter__success-desc">Cảm ơn bạn! Chúng tôi sẽ liên hệ sớm nhất.</p>
-              <button className="btn btn-outline" onClick={() => setStatus('idle')}>
-                Đăng ký thêm
-              </button>
+              <p className="px-newsletter__success-desc">Cảm ơn bạn! Chúng tôi sẽ liên hệ sớm nhất có thể.</p>
+              <button className="btn btn-outline" onClick={() => setStatus('idle')}>Đăng ký thêm</button>
             </div>
           ) : (
-            <form className="px-newsletter__form" onSubmit={handleSubmit} id="newsletter-form">
+            <form className="px-newsletter__form" onSubmit={handleSubmit} id="newsletter-form" noValidate>
               <div className="px-newsletter__fields">
-                <div className="px-newsletter__field">
+                {/* Name field */}
+                <div className={`px-newsletter__field${errors.name && touched.name ? ' px-newsletter__field--error' : touched.name && !errors.name ? ' px-newsletter__field--valid' : ''}`}>
                   <label htmlFor="newsletter-name" className="px-newsletter__label">Họ và tên</label>
                   <input
                     type="text"
@@ -101,11 +152,20 @@ export default function ParallaxNewsletter() {
                     placeholder="Nguyễn Văn A"
                     value={form.name}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     className="px-newsletter__input"
                     autoComplete="name"
+                    aria-describedby={errors.name && touched.name ? 'err-name' : undefined}
+                    aria-invalid={!!(errors.name && touched.name)}
+                    data-track="newsletter_name_field"
                   />
+                  {errors.name && touched.name && (
+                    <p className="px-newsletter__field-error" id="err-name" role="alert">{errors.name}</p>
+                  )}
                 </div>
-                <div className="px-newsletter__field">
+
+                {/* Email field */}
+                <div className={`px-newsletter__field${errors.email && touched.email ? ' px-newsletter__field--error' : touched.email && !errors.email ? ' px-newsletter__field--valid' : ''}`}>
                   <label htmlFor="newsletter-email" className="px-newsletter__label">Email</label>
                   <input
                     type="email"
@@ -114,17 +174,25 @@ export default function ParallaxNewsletter() {
                     placeholder="email@example.com"
                     value={form.email}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     className="px-newsletter__input"
                     autoComplete="email"
+                    aria-describedby={errors.email && touched.email ? 'err-email' : undefined}
+                    aria-invalid={!!(errors.email && touched.email)}
+                    data-track="newsletter_email_field"
                   />
+                  {errors.email && touched.email && (
+                    <p className="px-newsletter__field-error" id="err-email" role="alert">{errors.email}</p>
+                  )}
                 </div>
               </div>
-              {status === 'error' && <p className="px-newsletter__error">{errorMsg}</p>}
+
               <button
                 type="submit"
                 className="btn btn-primary btn--glow px-newsletter__submit"
                 disabled={status === 'loading'}
                 id="newsletter-submit"
+                data-track="newsletter_submit"
               >
                 {status === 'loading' ? (
                   <span className="px-newsletter__spinner" />

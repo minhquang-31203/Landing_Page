@@ -1,0 +1,25 @@
+/* SkeletonCard.css */
+.skeleton-card {
+  padding: 1.75rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.skeleton-card__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  margin-bottom: .5rem;
+}
+
+.skeleton-card__title {
+  height: 1.25rem;
+}
+
+.skeleton-card__text {
+  height: .875rem;
+}
