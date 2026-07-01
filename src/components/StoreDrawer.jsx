@@ -174,7 +174,7 @@ export default function StoreDrawer({
   return (
     <>
       <div className={`drawer-overlay${isOpen ? ' drawer-overlay--visible' : ''}`} onClick={onClose} aria-hidden="true" />
-      <aside className={`store-drawer${isOpen ? ' store-drawer--open' : ''}`} aria-label="Cửa hàng" aria-modal="true" role="dialog">
+      <div className={`store-drawer${isOpen ? ' store-drawer--open' : ''}`} aria-label="Cửa hàng" aria-modal="true" role="dialog">
 
         {/* Header */}
         <div className="store-drawer__header">
@@ -220,7 +220,7 @@ export default function StoreDrawer({
             <RecentSection recentlyViewed={recentlyViewed} onAddToCart={onAddToCart} />
           )}
         </div>
-      </aside>
+      </div>
     </>
   );
 }
